@@ -56,6 +56,41 @@ Membangun arsitektur jaringan saraf dalam (*deep neural network*) lengkap dengan
 - **Algoritma Backpropagation**: Propagasi sinyal error dari layer output kembali ke hidden layer (`layer_1_delta = layer_2_delta.dot(weights_1_2.T) * relu2deriv(layer_1)`) untuk atribusi kesalahan jarak jauh.
 - **Deep Network Pipeline Lengkap**: Integrasi menyeluruh perambatan maju, kalkulasi error, propagasi balik, dan pembaruan bobot dalam satu loop pelatihan terintegrasi.
 
+### [Bab 7: How to Picture Neural Networks — In Your Head and on Paper](Bab7_How_to_Picture_Neural_Networks.ipynb)
+Membahas teknik visualisasi dan abstraksi mental untuk memahami cara kerja jaringan saraf tanpa kewalahan oleh detail grafis:
+- **Penyederhanaan Representasi Jaringan**: Mengapa visualisasi diagram node dan bobot individu menjadi tidak praktis saat ukuran model membesar, serta transisi ke representasi tingkat layer.
+- **Correlation Summarization**: Konsep bahwa hidden layer berfungsi merangkum korelasi fitur input menjadi representasi perantara tingkat tinggi yang lebih mudah dipisahkan oleh output layer.
+- **Visualisasi Matriks dan Vektor**: Alur komputasi forward propagation sebagai perkalian vektor-matriks beruntun (`layer_0.dot(weights_0_1)` dilanjutkan ReLU, lalu `.dot(weights_1_2)`).
+- **Notasi Formal dan Huruf**: Penggunaan notasi aljabar linear ringkas ($x$, $W$, $h$, $y$) sebagai alat berpikir efisien untuk memetakan arsitektur kompleks.
+
+### [Bab 8: Learning Signal and Ignoring Noise — Introduction to Regularization and Batching](Bab8_Learning_Signal_and_Ignoring_Noise.ipynb)
+Membahas teknik regularisasi dan optimasi batch untuk mengatasi overfitting dan mempercepat konvergensi:
+- **Jaringan Tiga Layer pada Dataset MNIST**: Pelatihan deep neural network penuh pada citra digit tulisan tangan MNIST menggunakan representasi piksel mentah.
+- **Memorization vs. Generalization**: Membedakan antara menghafal *noise* pada data latih (overfitting) dan mempelajari pola sinyal sejati yang mampu digeneralisasikan ke data uji baru.
+- **Teknik Regularisasi**:
+  - *Early Stopping*: Pemantauan akurasi validasi/uji dan penghentian training sebelum model mulai mengalami degradasi generalisasi.
+  - *Dropout*: Regularisasi standar industri dengan menonaktifkan sebagian neuron secara acak selama training (`dropout_mask`), yang secara efektif melatih ensembel dari jutaan sub-network mini.
+- **Mini-Batch Gradient Descent**: Pengelompokan data ke dalam batch kecil (misal 100 sampel) untuk memaksimalkan efisiensi komputasi vektorisasi NumPy dan menghaluskan fluktuasi pembaruan gradien.
+
+### [Bab 9: Modeling Probabilities and Nonlinearities — Activation Functions](Bab9_Modeling_Probabilities_and_Nonlinearities.ipynb)
+Membahas fungsi aktivasi modern, pemodelan probabilitas, dan penanganan non-linearitas:
+- **Anatomi dan Kriteria Fungsi Aktivasi**: Peran penting fungsi aktivasi dalam memutus linearitas, syarat kontinuitas diferensiabel, dan sifat monotonik.
+- **Fungsi Aktivasi Hidden Layer**: Karakteristik dan komparasi antara Sigmoid, Tanh (rentang -1 hingga 1, zero-centered), dan ReLU (efisiensi komputasi dan ketahanan terhadap gradien jenuh).
+- **Fungsi Aktivasi Output Layer**: Pemilihan Sigmoid untuk probabilitas kejadian independen/biner vs. Softmax untuk distribusi probabilitas kelas yang saling eksklusif (*mutually exclusive*).
+- **Implementasi Komputasi Softmax**: Normalisasi eksponensial numerik stabil (`np.exp(x) / np.sum(np.exp(x))`) untuk mengubah skor mentah (*logits*) menjadi distribusi probabilitas yang berjumlah tepat 1.
+- **Backpropagation dengan Turunan Aktivasi**: Formulasi analitis turunan fungsi aktivasi yang dihitung langsung dari output layer (`tanh2deriv`, `sigmoid2deriv`, `relu2deriv`) untuk modulasi sinyal delta error.
+- **Peningkatan Model MNIST**: Implementasi jaringan dengan aktivasi Tanh pada hidden layer dan Softmax pada output layer.
+
+### [Bab 10: Neural Learning About Edges and Corners — Intro to Convolutional Neural Networks](Bab10_Neural_Learning_About_Edges_and_Corners.ipynb)
+Membangun Convolutional Neural Network (CNN) dari dasar menggunakan NumPy untuk pengenalan pola spasial:
+- **Motivasi CNN dan Weight Sharing**: Mengatasi inefisiensi parameter fully connected layer pada citra berdimensi tinggi melalui penggunaan ulang bobot (*weight sharing*).
+- **Convolutional Layer**:
+  - Prinsip operasi konvolusi: Menggeser filter/kernel kecil (misal 3x3) ke seluruh gambar untuk mendeteksi fitur lokal invarian (tepi horizontal, vertikal, dan diagonal).
+  - Ekstraksi patch gambar berukuran $k \times k$ dan kalkulasi dot product dengan kernel bobot.
+- **Pooling Layer**: Konsep subsampling spasial (Max Pooling) untuk mereduksi ukuran representasi fitur dan memberikan invariansi terhadap pergeseran kecil (*translational invariance*).
+- **Implementasi CNN Lengkap dari Nol**: Alur forward pass konvolusi, aktivasi, dan perambatan balik gradien (*backpropagation*) ke bobot kernel konvolusi menggunakan operasi array NumPy murni.
+- **Efisiensi Parameter**: Perbandingan drastis efisiensi jumlah bobot antara arsitektur Dense/Linear konvensional dan Convolutional Layer.
+
 ---
 
 ## Dataset dan Studi Kasus yang Digunakan
@@ -63,8 +98,9 @@ Membangun arsitektur jaringan saraf dalam (*deep neural network*) lengkap dengan
 Implementasi kode pada notebook menggunakan data sintetis maupun data riil untuk menguji pemahaman konsep:
 
 - **Toy Sports Data (Baseball/Team Stats)**: Fitur rata-rata jumlah sentuhan/jari kaki (*toes*), rekor menang-kalah (*win/loss record*), dan jumlah penggemar (*number of fans*) untuk memprediksi probabilitas kemenangan atau cedera pemain (Bab 3, 4, 5).
-- **MNIST Handwritten Digits**: Dataset gambar grayscale berukuran 28x28 piksel berisi digit tulisan tangan (0-9) untuk klasifikasi citra multikelas dan visualisasi bobot filter (Bab 5).
+- **MNIST Handwritten Digits**: Dataset gambar grayscale berukuran 28x28 piksel berisi digit tulisan tangan (0-9) untuk klasifikasi citra multikelas, evaluasi regularisasi dropout/batching, aktivasi tanh/softmax, dan arsitektur CNN (Bab 5, 8, 9, 10).
 - **Streetlight Problem**: Dataset logika 3 lampu jalanan biner untuk mensimulasikan korelasi langsung, korelasi saling bertentangan, serta korelasi non-linear/kondisional yang memerlukan hidden layer dan fungsi aktivasi (Bab 6).
+- **Synthetic 8x8 Pattern & Edge Kernels**: Citra sintetis sederhana dan filter konvolusi 3x3 untuk mendemonstrasikan deteksi tepi horizontal, vertikal, dan diagonal secara visual (Bab 10).
 
 ---
 
@@ -74,6 +110,8 @@ Proyek ini dibangun secara mandiri (*from scratch*) tanpa framework deep learnin
 
 - **Python 3**: Bahasa pemrograman utama.
 - **NumPy**: Komputasi numerik, aljabar linear, representasi array n-dimensi, dan operasi dot/outer product.
+- **matplotlib**: Visualisasi kurva loss/akurasi pelatihan, bobot filter, dan representasi spasial (Bab 8, 9, 10).
+- **scikit-learn** (atau **keras**): Pengunduhan dataset MNIST (`fetch_openml` / `keras.datasets`) sebagai data input evaluasi model (Bab 8, 9, 10).
 - **Jupyter Notebook**: Lingkungan interaktif untuk dokumentasi, penjelasan formula matematika, dan eksekusi kode.
 
 ---
@@ -95,11 +133,11 @@ Proyek ini dibangun secara mandiri (*from scratch*) tanpa framework deep learnin
 
 3. **Install dependensi yang diperlukan**:
    ```bash
-   pip install numpy jupyter
+   pip install numpy matplotlib scikit-learn jupyter
    ```
 
 4. **Jalankan Jupyter Notebook**:
    ```bash
    jupyter notebook
    ```
-   Buka berkas notebook bab yang ingin dipelajari (misalnya `Bab1_Introducing_Deep_Learning.ipynb` hingga `Bab6_Building_Your_First_Deep_Neural_Network.ipynb`).
+   Buka berkas notebook bab yang ingin dipelajari (misalnya `Bab1_Introducing_Deep_Learning.ipynb` hingga `Bab10_Neural_Learning_About_Edges_and_Corners.ipynb`).
